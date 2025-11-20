@@ -1359,22 +1359,23 @@
             });
 
 
-            // Placeholder Chat List Modal Listeners (Functionality is currently basic)
-            document.getElementById('chat-list-btn').addEventListener('click', async () => {
-                // This is a placeholder for future complex chat management UI
-                displayMessage("Chat history viewing/switching is coming soon! For now, your most recent chat is loaded.", 'bot');
-            });
-            
-            document.getElementById('create-new-chat-btn').addEventListener('click', async () => {
-                 // This is a placeholder for future complex chat management UI
-                document.getElementById('chat-list-modal').classList.add('hidden');
-                await createNewChatSession();
-                displayMessage("New chat started! History cleared for this session.", 'bot');
-            });
-            
-            document.getElementById('close-chat-list-btn').addEventListener('click', () => {
-                document.getElementById('chat-list-modal').classList.add('hidden');
-            });
+<!-- ================= CHAT MODAL LISTENERS ================= -->
+<script>
+document.getElementById('chat-list-btn').addEventListener('click', async () => {
+    displayMessage("Chat history viewing/switching is coming soon! For now, your most recent chat is loaded.", 'bot');
+});
+
+document.getElementById('create-new-chat-btn').addEventListener('click', async () => {
+    document.getElementById('chat-list-modal').classList.add('hidden');
+    await createNewChatSession();
+    displayMessage("New chat started! History cleared for this session.", 'bot');
+});
+
+document.getElementById('close-chat-list-btn').addEventListener('click', () => {
+    document.getElementById('chat-list-modal').classList.add('hidden');
+});
+</script>
+
 <!-- ================= ADMIN PANEL ================= -->
 <main id="panelContent" style="display:none; padding:20px; background:#fff; margin:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
   <h2>Users</h2>
@@ -1416,7 +1417,6 @@
       return; // panel stays hidden
     }
 
-    // Show panel
     document.getElementById("panelContent").style.display = "block";
 
     // Example data (replace with backend later)
@@ -1469,11 +1469,10 @@
     alert("User "+id+" unbanned (implement backend logic)");
   }
 
-  // Run admin check AFTER page loads (end of file)
-  window.addEventListener('load', checkAdminAccess);
+  // Run both chat modal and admin panel code AFTER page loads
+  window.addEventListener('load', () => {
+    // Admin panel
+    checkAdminAccess();
+  });
 </script>
 
-        });
-    </script>
-</body>
-</html>
