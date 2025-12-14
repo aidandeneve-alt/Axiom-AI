@@ -296,7 +296,7 @@ color: #f7fafc;
 <div class="chat-header rounded-t-2xl">
 <div class="flex items-center gap-4">
 <i class="fas fa-robot text-blue-500 text-2xl"></i>
-<h1 class="text-xl font-semibold text-gray-800">Axiom AI</h1>
+<h1 class="text-xl font-semibold text-gray-800">Haven AI Bot</h1>
 <!-- Role Status Badge (NEW) -->
 <span id="user-role-status" class="text-xs font-medium px-2 py-0.5 rounded-full hidden"></span>
 <!-- Weather Status (NEW) -->
@@ -363,7 +363,7 @@ color: #f7fafc;
 <button class="option-button" data-persona="Darchat">Darchat</button>
 <button class="option-button" data-persona="Music Teacher">Music Teacher</button>
 <button class="option-button" data-persona="History Teacher">History Teacher</button>
-<button class="option-button" data-persona="Math Teacher">Math Teacher</button>
+                    <button class="option-button" data-persona="Math Teacher">Math Teacher</button>
 </div>
 </div>
 
@@ -429,7 +429,7 @@ color: #f7fafc;
 <div id="auth-modal" class="auth-modal"> <!-- Starts visible by default, hidden by JS on successful auth -->
 <div class="auth-content rounded-2xl">
 
-<h1 class="text-3xl font-bold mb-2 text-blue-600">Welcome to Axiom AI</h1>
+<h1 class="text-3xl font-bold mb-2 text-blue-600">Welcome to Haven AI</h1>
 <p id="auth-prompt" class="text-center text-gray-600 dark:text-gray-300 mb-6 font-medium">Please log in or create an account to start chatting and save your progress.</p>
 
 <!-- Tabs -->
@@ -585,42 +585,38 @@ weatherStatusDiv.innerHTML = `
 }
 
 
-// Persona instructions map (used to build system prompt reliably)
-const PERSONA_INSTRUCTIONS = {
-  "Friendly Guide": "You are warm, supportive, and encouraging. Keep answers friendly and accessible; use occasional emojis to lighten tone.",
-  "Deep Thinker": "You are analytical and philosophical. Provide well-structured, thoughtful responses that explore underlying reasons.",
-  "Creative Storyteller": "You respond with imaginative short narratives and vivid descriptions; be creative and engaging.",
-  "Creative Poet": "You reply in short, expressive poems when appropriate.",
-  "Helpful Tutor": "You are patient and explanatory. Break down concepts, provide examples and check for understanding.",
-  "Biology Expert": "You are a precise and knowledgeable biology expert. Use correct scientific terminology and clarify complex topics clearly.",
-  "Darchat": "You are absurd, chaotic, and humorous; responses can be nonsense and comedic.",
-  "Music Teacher": "You provide song lyrics, music notes, and instructions on how to play pieces as requested.",
-  "History Teacher": "You explain historical topics, provide context and occasional fun facts or light jokes.",
-  "Math Teacher": "You help with math concepts, provide step-by-step solutions and friendly encouragement."
-};
-
 // Function to make API call to Gemini model for text-only
 async function fetchGeminiResponse(userPrompt) {
 // Special check for the "creator" query
-const lowerCasePrompt = (userPrompt || "").toLowerCase();
+const lowerCasePrompt = userPrompt.toLowerCase();
 const creatorPhrases = ["who is your creator", "who made you", "who created you", "who is his creator", "who is ur creator", "who made it", "who is ur founder"];
 const isCreatorQuery = creatorPhrases.some(phrase => lowerCasePrompt.includes(phrase));
 
 if (isCreatorQuery) {
-return "I was created/founded by Aidan De Neve, a dedicated software developer with a passion for building innovative digital solutions.";
+return "I was created/Founded by Aidan De Neve, a dedicated software developer with a passion for building innovative digital solutions. His work combines technical expertise with a strong focus on user experience, resulting in tools and applications designed to be both powerful and intuitive.";
 }
 
 // Display loading status
-statusMessage.textContent = 'Axiom is thinking...';
+statusMessage.textContent = 'Haven is thinking...';
 statusMessage.classList.remove('hidden');
 chatBody.scrollTop = chatBody.scrollHeight;
 
-// Build a concise, reliable system prompt using the current persona
-const personaInstruction = PERSONA_INSTRUCTIONS[currentPersona] || "";
-const systemPrompt = `You are a conversational AI named "Axiom". Persona: ${currentPersona}. ${personaInstruction}
-The user's previous messages and your responses are in the chat history. Respond to the user's last message in the style of the persona. Keep answers helpful and safe.`;
 
-// Prepare API URL (using apiKey variable)
+const systemPrompt = `You are a conversational AI bot named 'Axiom'. Your primary goal is to be a helpful and empathetic listener, unless the persona dictates otherwise. Your persona is set to '${currentPersona} and remember ur creator is Aidan De Neve a dedicated software developer with a passion for building innovative digital solutions. His work combines technical expertise with a strong focus on user experience, resulting in tools and applications designed to be both powerful and intuitive and if the persona changes you must forget about the other one until he changes it back.'.
+           - Friendly Guide: You are a warm, supportive, and highly knowledgeable assistant. Your tone is encouraging and conversational. You use emojis occasionally to lighten the mood. Focus on providing clear, helpful answers.
+           - Deep Thinker: You are an analytical and philosophical AI. Your responses are well-structured, objective, and explore the 'why' behind concepts. You maintain a serious, academic tone.
+           - Creative Storyteller: You are a highly imaginative and expressive writer. You answer questions by weaving them into short, engaging narratives, poems, or dramatic scenes. Every response should be creative and fun.
+           - Creative Poet: You are a creative and expressive poet. Your responses are crafted as short, imaginative poems.
+           - Helpful Tutor: You are a patient and knowledgeable tutor. Your responses are structured to explain concepts clearly, provide examples, and ask questions to check for understanding.
+           - Biology Expert: You are a highly knowledgeable and precise **Biology Expert**. Your goal is to teach and explain complex biological concepts clearly. Use scientific terminology accurately and offer simple analogies or diagrams when appropriate. Your tone is academic, informative, and patient and you can also make jokes about biology and tell fun facts :).
+           - Darchat: You are Darchat, the master of absurd, chaotic, and funny non-sequiturs. Your goal is to be useless but **hilarious**. Your responses must be completely irrelevant to the user's message, feature bizarre, disconnected phrases, and possess a chaotic sense of humor. Imagine a cat typing on a keyboard while simultaneously planning a heist involving rubber chickens and a very tired lighthouse keeper. Make it funny!
+           - Music Teacher: You are a music teacher you can give the user any song lyrics and how to play it you can give music notes and other things.
+            - History Teacher You are a history teacher you can talk about subjects of history and help the people with it you can also tell fun facts and jokes.
+            - History Teacher: You are a history teacher you can talk about subjects of history and help the people with it you can also tell fun facts and jokes.
+            - Math Teacher: you are a Math teacher you can talk about different things of math help students with their work and make fun jokes and tell fun facts if people say they dont understand you try to make it more simple.
+
+           The user's previous messages and your responses are in the chat history. The user wants you to respond to their last message. Respond in the style of your current persona. Your response should be a single, coherent message. Note that the user is under 18, so maintain an age-appropriate tone.`;
+
 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
 try {
@@ -629,9 +625,9 @@ const messagesRef = collection(db, `artifacts/${appId}/users/${userId}/chat_sess
 const querySnapshot = await getDocs(messagesRef);
 let chatHistory = [];
 // Sort messages by timestamp, handling cases where it's not yet available
-const sortedMessages = querySnapshot.docs.map(doc => doc.data()).sort((a, b) => (a.timestamp?.toDate?.() || 0) - (b.timestamp?.toDate?.() || 0));
+const sortedMessages = querySnapshot.docs.map(doc => doc.data()).sort((a, b) => (a.timestamp?.toDate() || 0) - (b.timestamp?.toDate() || 0));
 
-// Construct conversation history for the API (up to the last 50)
+// Construct conversation history for the API (up to the last CHAT_HISTORY_LIMIT)
 sortedMessages.slice(-50).forEach(data => {
 const role = data.role === 'user' ? 'user' : 'model';
 let parts = [];
@@ -645,6 +641,7 @@ if (parts.length > 0) {
 chatHistory.push({ role, parts });
 }
 });
+
 
 // Add the new user message to the history for the API call
 chatHistory.push({
@@ -689,15 +686,12 @@ statusMessage.textContent = '';
 
 // Function to make API call to Gemini model for vision
 async function fetchGeminiVisionResponse(userPrompt, imageData) {
-statusMessage.textContent = 'Axiom is analyzing the photo...';
+statusMessage.textContent = 'Haven is analyzing the photo...';
 statusMessage.classList.remove('hidden');
 chatBody.scrollTop = chatBody.scrollHeight;
 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
 try {
-const personaInstruction = PERSONA_INSTRUCTIONS[currentPersona] || "";
-const systemPrompt = `You are "Axiom". Persona: ${currentPersona}. ${personaInstruction} Describe and respond to the image in the persona's voice.`;
-
 const payload = {
 contents: [{
 role: "user",
@@ -705,8 +699,7 @@ parts: [
 { text: userPrompt || "Describe this image in detail and suggest a fun activity related to it."},
 { inlineData: { mimeType: "image/jpeg", data: imageData } }
 ]
-}],
-systemInstruction: { parts: [{ text: systemPrompt }] }
+}]
 };
 
 const response = await fetch(apiUrl, {
@@ -906,7 +899,7 @@ currentChatSessionId = newDocRef.id;
 const messagesRef = collection(db, `artifacts/${appId}/users/${userId}/chat_sessions/${currentChatSessionId}/messages`);
 await addDoc(messagesRef, {
 role: 'bot',
-message: "Hello! I'm Axiom, your new AI assistant. How can I help you today?",
+message: "Hello! I'm Haven, your new AI assistant. How can I help you today?",
 timestamp: serverTimestamp()
 });
 
@@ -932,7 +925,7 @@ const q = messagesRef;
 unsubscribeFromMessages = onSnapshot(q, (snapshot) => {
 const docs = snapshot.docs.map(doc => doc.data());
 // Sort messages client-side by timestamp to ensure correct order
-docs.sort((a, b) => (a.timestamp?.toDate?.() || 0) - (b.timestamp?.toDate?.() || 0));
+docs.sort((a, b) => (a.timestamp?.toDate() || 0) - (b.timestamp?.toDate() || 0));
 
 chatBody.innerHTML = ''; // Clear previous messages
 docs.forEach(messageData => {
@@ -1006,115 +999,385 @@ fetchWeather(currentCity);
 }
 }
 
-// Setup option button event listeners so changes actually take effect
-function setupOptionButtons() {
-  // Persona buttons
-  document.querySelectorAll('#persona-options .option-button').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const newPersona = btn.dataset.persona;
-      if (newPersona && newPersona !== currentPersona) {
-        currentPersona = newPersona;
-        updateUIForSettings();
-        await saveSettings();
-        // Give user immediate feedback in chat
-        displayMessage(`Persona switched to "${currentPersona}".`, 'bot');
-      }
-    });
-  });
+// --- AUTHENTICATION LOGIC ---
 
-  // Theme buttons
-  document.querySelectorAll('#theme-options .option-button').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const newTheme = btn.dataset.theme;
-      if (newTheme && newTheme !== currentTheme) {
-        currentTheme = newTheme;
-        updateUIForSettings();
-        await saveSettings();
-        displayMessage(`Theme set to "${currentTheme}".`, 'bot');
-      }
-    });
-  });
-
-  // Layout buttons
-  document.querySelectorAll('#layout-options .option-button').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const newLayout = btn.dataset.layout;
-      if (newLayout && newLayout !== currentLayout) {
-        currentLayout = newLayout;
-        updateUIForSettings();
-        await saveSettings();
-        displayMessage(`Layout changed to "${currentLayout}".`, 'bot');
-      }
-    });
-  });
-
-  // City buttons
-  document.querySelectorAll('#city-options .option-button').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const newCity = btn.dataset.city;
-      if (newCity && newCity !== currentCity) {
-        currentCity = newCity;
-        updateUIForSettings();
-        await saveSettings();
-        await fetchWeather(currentCity);
-        displayMessage(`Weather city set to "${currentCity}".`, 'bot');
-      }
-    });
-  });
-
-  // Close settings button
-  const closeSettingsBtn = document.getElementById('close-settings-btn');
-  if (closeSettingsBtn) {
-    closeSettingsBtn.addEventListener('click', () => {
-      document.getElementById('settings-modal').classList.add('hidden');
-    });
-  }
+function showAuthMessage(message, isError = false) {
+authMessage.textContent = message;
+authMessage.classList.remove('hidden', 'bg-red-200', 'text-red-800', 'bg-green-200', 'text-green-800');
+authMessage.classList.add(isError ? 'bg-red-200' : 'bg-green-200');
+authMessage.classList.add(isError ? 'text-red-800' : 'text-green-800');
 }
 
-// Initialize UI listeners after DOM and Firebase initialization
-document.addEventListener('DOMContentLoaded', () => {
-  setupOptionButtons();
+function clearAuthMessage() {
+authMessage.classList.add('hidden');
+authMessage.textContent = '';
+}
 
-  // Settings button opens modal
-  const settingsBtn = document.getElementById('settings-btn');
-  if (settingsBtn) {
-    settingsBtn.addEventListener('click', () => {
-      document.getElementById('settings-modal').classList.remove('hidden');
-    });
-  }
+function toggleAuthMode(mode) {
+clearAuthMessage();
 
-  // Wire up send button (ensure persona is used when sending)
-  const sendBtn = document.getElementById('send-btn');
-  if (sendBtn) {
-    sendBtn.addEventListener('click', async () => {
-      const text = (userInput.value || "").trim();
-      if (!text) return;
-      // Show user message immediately
-      displayMessage(text, 'user');
-      chatBody.scrollTop = chatBody.scrollHeight;
-      // Save message
-      await saveMessage('user', text);
-      userInput.value = '';
-      // Get response (fetchGeminiResponse uses currentPersona)
-      const response = await fetchGeminiResponse(text);
-      await saveMessage('bot', response);
-      displayMessage(response, 'bot');
-      chatBody.scrollTop = chatBody.scrollHeight;
-    });
-  }
+// Map the tab mode to the actual panel ID
+const panelIdMap = {
+'status': 'auth-profile',
+'login': 'login-form',
+'signup': 'signup-form'
+};
 
-  // Enter key to send message
-  userInput.addEventListener('keypress', async (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('send-btn').click();
-    }
-  });
+const targetPanelId = panelIdMap[mode];
+const targetTabBtn = document.getElementById(`tab-${mode}`);
+const targetPanel = document.getElementById(targetPanelId);
 
+// 1. Hide all panels
+document.querySelectorAll('.auth-panel').forEach(panel => {
+if (panel) panel.classList.add('hidden');
 });
 
-[...] 
-// Note: The rest of the file beyond this point remains unchanged (event handlers for camera/file, auth flows, chat list controls, etc.). Ensure you keep the remaining logic as in the original file.
+// 2. Deactivate all tabs
+document.querySelectorAll('.tab-button').forEach(btn => {
+if (btn) btn.classList.remove('active');
+});
+
+// 3. Activate the requested tab and panel (with null checks)
+if (targetTabBtn) {
+targetTabBtn.classList.add('active');
+} else {
+console.error(`Tab button for mode '${mode}' not found.`);
+}
+
+if (targetPanel) {
+targetPanel.classList.remove('hidden');
+} else {
+console.error(`Auth panel for mode '${mode}' (ID: ${targetPanelId}) not found.`);
+}
+}
+
+async function handleSignIn(e) {
+e.preventDefault();
+const email = document.getElementById('login-email').value;
+const password = document.getElementById('login-password').value;
+clearAuthMessage();
+
+if (!email || !password) {
+showAuthMessage("Email and password are required.", true);
+return;
+}
+
+try {
+// 1. Sign out the current user (if any, typically from a custom token)
+if (auth.currentUser) {
+await signOut(auth);
+}
+
+// 2. Sign in with the provided credentials
+await signInWithEmailAndPassword(auth, email, password);
+
+showAuthMessage(`Successfully logged in as ${email}.`, false);
+toggleAuthMode('status');
+document.getElementById('login-password').value = ''; // Clear password field
+// onAuthStateChanged handles showing the chat container
+} catch (error) {
+console.error("Sign In Error:", error);
+showAuthMessage(`Login Failed: ${error.message.replace('Firebase:', '').trim()}`, true);
+}
+}
+
+async function handleSignUp(e) {
+e.preventDefault();
+const email = document.getElementById('signup-email').value;
+const password = document.getElementById('signup-password').value;
+clearAuthMessage();
+
+if (!email || password.length < 6) {
+showAuthMessage("Valid email and a password of at least 6 characters are required.", true);
+return;
+}
+
+try {
+// 1. Sign out the current user 
+if (auth.currentUser) {
+await signOut(auth);
+}
+
+// 2. Create the new user
+await createUserWithEmailAndPassword(auth, email, password);
+
+showAuthMessage(`Account created successfully for ${email}. You are now logged in.`, false);
+toggleAuthMode('status');
+document.getElementById('signup-password').value = ''; // Clear password field
+// onAuthStateChanged handles showing the chat container
+} catch (error) {
+console.error("Sign Up Error:", error);
+showAuthMessage(`Sign Up Failed: ${error.message.replace('Firebase:', '').trim()}`, true);
+}
+}
+
+async function handleSignOut() {
+clearAuthMessage();
+try {
+// 1. Sign out the currently authenticated user
+await signOut(auth); 
+
+// 2. This will trigger onAuthStateChanged which will call displayLoginRequired()
+showAuthMessage("Signed out successfully. Please log back in.", false);
+toggleAuthMode('login');
+} catch (error) {
+console.error("Sign Out Error:", error);
+showAuthMessage(`Sign Out Failed: ${error.message.replace('Firebase:', '').trim()}`, true);
+}
+}
+
+// --- End AUTHENTICATION LOGIC ---
+
+// --- Messaging Logic ---
+async function sendMessage() {
+const prompt = userInput.value.trim();
+const data = currentImageData;
+
+// Immediately check if the user is authenticated to prevent unlogged actions
+if (!userId) {
+displayMessage("Please log in or create an account to start chatting.", 'bot');
+return;
+}
+
+if (!prompt && !data) return;
+
+// Clear input and image data immediately
+userInput.value = '';
+currentImageData = null;
+document.getElementById('file-input').value = ''; // Reset file input
+
+// Display user message first
+displayMessage(prompt || "Image sent without text.", 'user', data);
+
+// Save user message to Firestore
+await saveMessage('user', prompt, data);
+
+// Fetch and display bot response
+let botResponse;
+if (data) {
+botResponse = await fetchGeminiVisionResponse(prompt, data);
+} else {
+botResponse = await fetchGeminiResponse(prompt);
+}
+
+// Display bot response
+displayMessage(botResponse, 'bot');
+
+// Save bot response to Firestore
+await saveMessage('bot', botResponse);
+
+chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function handleFileSelect(event) {
+const file = event.target.files[0];
+if (!file) return;
+
+const reader = new FileReader();
+reader.onload = (e) => {
+const base64String = e.target.result.split(',')[1];
+currentImageData = base64String;
+userInput.value = "Describe this image in detail and suggest a fun activity related to it.";
+userInput.focus();
+
+// Show a brief preview notification
+displayMessage("Image selected! Enter your prompt and click Send.", "bot");
+};
+reader.readAsDataURL(file);
+}
+
+// --- Camera Logic ---
+function openCameraModal() {
+document.getElementById('camera-modal').classList.remove('hidden');
+document.getElementById('camera-modal').classList.add('flex');
+const video = document.getElementById('camera-video');
+
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }) // Use environment camera on mobile
+.then(stream => {
+videoStream = stream;
+video.srcObject = stream;
+video.play();
+})
+.catch(err => {
+console.error("Error accessing camera:", err);
+// Fallback message display in modal
+const content = document.querySelector('#camera-modal .camera-content');
+content.innerHTML = `<h2 class="text-xl font-bold mb-4">Camera Error</h2><p class="text-red-500">Could not access camera. Please ensure permissions are granted.</p><button id="cancel-photo-btn-error" class="bg-gray-400 hover:bg-gray-500 flex-1 py-2 px-4 rounded-full text-white font-semibold">Close</button>`;
+document.getElementById('cancel-photo-btn-error').addEventListener('click', closeCameraModal);
+});
+} else {
+// Use a custom modal for alert
+const content = document.querySelector('#camera-modal .camera-content');
+content.innerHTML = `<h2 class="text-xl font-bold mb-4">Camera Not Supported</h2><p class="text-red-500">Camera not supported on this device/browser.</p><button id="cancel-photo-btn-error" class="bg-gray-400 hover:bg-gray-500 flex-1 py-2 px-4 rounded-full text-white font-semibold">Close</button>`;
+document.getElementById('cancel-photo-btn-error').addEventListener('click', closeCameraModal);
+}
+}
+
+function closeCameraModal() {
+if (videoStream) {
+videoStream.getTracks().forEach(track => track.stop());
+videoStream = null;
+}
+document.getElementById('camera-modal').classList.add('hidden');
+document.getElementById('camera-modal').classList.remove('flex');
+
+// Re-render the original camera modal content if it was replaced by error message
+const content = document.querySelector('#camera-modal .camera-content');
+if (!document.getElementById('camera-video')) {
+content.innerHTML = `
+                   <h2 class="text-xl font-bold mb-4">Take a Photo</h2>
+                   <video id="camera-video" autoplay playsinline class="w-full max-w-md rounded-lg shadow-xl mb-4"></video>
+                   <canvas id="camera-canvas" class="hidden"></canvas>
+                   <div class="flex gap-4 w-full max-w-xs">
+                       <button id="cancel-photo-btn" class="bg-red-500 hover:bg-red-600 flex-1 py-2 px-4 rounded-full text-white font-semibold">Cancel</button>
+                       <button id="take-photo-btn" class="bg-blue-500 hover:bg-blue-600 flex-1 py-2 px-4 rounded-full text-white font-semibold">Take Photo</button>
+                   </div>`;
+// Re-attach listeners after re-rendering the HTML
+document.getElementById('cancel-photo-btn').addEventListener('click', closeCameraModal);
+document.getElementById('take-photo-btn').addEventListener('click', takePhoto);
+}
+}
+
+function takePhoto() {
+const video = document.getElementById('camera-video');
+const canvas = document.getElementById('camera-canvas');
+
+// Set canvas dimensions to match video stream
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+
+const ctx = canvas.getContext('2d');
+// Draw the current video frame onto the canvas
+ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+// Convert canvas content to base64 JPEG data
+const dataURL = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+const base64String = dataURL.split(',')[1];
+
+// Set the image data and prompt
+currentImageData = base64String;
+userInput.value = "Describe this image in detail and suggest a fun activity related to it.";
+
+closeCameraModal();
+
+// Notify user that the image is ready
+displayMessage("Photo taken and ready to send! Enter your prompt or click Send.", "bot");
+userInput.focus();
+}
+
+// --- Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+initializeFirebase();
+
+// Auth Modal Listeners
+loginForm.addEventListener('submit', handleSignIn);
+signupForm.addEventListener('submit', handleSignUp);
+document.getElementById('signout-btn').addEventListener('click', handleSignOut);
+document.getElementById('switch-to-signup-btn').addEventListener('click', () => toggleAuthMode('signup'));
+document.getElementById('switch-to-login-btn').addEventListener('click', () => toggleAuthMode('login'));
+document.getElementById('account-btn').addEventListener('click', () => {
+// When opening via button, ensure 'status' is visible if logged in, and allow closing
+toggleAuthMode('status');
+authModal.classList.remove('hidden');
+authModal.classList.add('flex');
+closeAuthBtn.classList.remove('hidden');
+});
+closeAuthBtn.addEventListener('click', () => {
+authModal.classList.add('hidden');
+authModal.classList.remove('flex');
+});
+document.getElementById('tab-status').addEventListener('click', () => toggleAuthMode('status'));
+document.getElementById('tab-login').addEventListener('click', () => toggleAuthMode('login'));
+document.getElementById('tab-signup').addEventListener('click', () => toggleAuthMode('signup'));
+
+// Chat Input Listeners
+document.getElementById('send-btn').addEventListener('click', sendMessage);
+document.getElementById('user-input').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') {
+sendMessage();
+}
+});
+document.getElementById('file-btn').addEventListener('click', () => document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change', handleFileSelect);
+
+// Camera Listeners
+document.getElementById('camera-btn').addEventListener('click', openCameraModal);
+
+// Camera modal listeners are dynamically added and removed in the open/close functions, 
+// but we need to ensure the initial ones are set up if they exist.
+const initialCancelBtn = document.getElementById('cancel-photo-btn');
+const initialTakePhotoBtn = document.getElementById('take-photo-btn');
+if (initialCancelBtn) initialCancelBtn.addEventListener('click', closeCameraModal);
+if (initialTakePhotoBtn) initialTakePhotoBtn.addEventListener('click', takePhoto);
+
+// Settings Listeners
+document.getElementById('settings-btn').addEventListener('click', () => {
+updateUIForSettings(); // Ensure UI reflects current state on open
+document.getElementById('settings-modal').classList.remove('hidden');
+});
+document.getElementById('close-settings-btn').addEventListener('click', () => {
+document.getElementById('settings-modal').classList.add('hidden');
+});
+
+// Persona Option Listener
+document.getElementById('persona-options').addEventListener('click', (e) => {
+if (e.target.classList.contains('option-button')) {
+currentPersona = e.target.dataset.persona;
+saveSettings();
+updateUIForSettings();
+}
+});
+
+// Theme Option Listener
+document.getElementById('theme-options').addEventListener('click', (e) => {
+if (e.target.classList.contains('option-button')) {
+currentTheme = e.target.dataset.theme;
+saveSettings();
+updateUIForSettings();
+}
+});
+
+// Layout Option Listener
+document.getElementById('layout-options').addEventListener('click', (e) => {
+if (e.target.classList.contains('option-button')) {
+currentLayout = e.target.dataset.layout;
+saveSettings();
+updateUIForSettings();
+}
+});
+
+// City Option Listener (NEW)
+document.getElementById('city-options').addEventListener('click', (e) => {
+if (e.target.classList.contains('option-button')) {
+const newCity = e.target.dataset.city;
+if (newCity !== currentCity) {
+currentCity = newCity;
+saveSettings();
+updateUIForSettings(); // This will trigger fetchWeather
+}
+}
+});
+
+
+// Placeholder Chat List Modal Listeners (Functionality is currently basic)
+document.getElementById('chat-list-btn').addEventListener('click', async () => {
+// This is a placeholder for future complex chat management UI
+displayMessage("Chat history viewing/switching is coming soon! For now, your most recent chat is loaded.", 'bot');
+});
+
+document.getElementById('create-new-chat-btn').addEventListener('click', async () => {
+// This is a placeholder for future complex chat management UI
+document.getElementById('chat-list-modal').classList.add('hidden');
+await createNewChatSession();
+displayMessage("New chat started! History cleared for this session.", 'bot');
+});
+
+document.getElementById('close-chat-list-btn').addEventListener('click', () => {
+document.getElementById('chat-list-modal').classList.add('hidden');
+});
+
+});
 </script>
 </body>
 </html>
